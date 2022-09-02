@@ -1,0 +1,43 @@
+describe("Tests", function() {
+    describe("calcPriceOfFlowers", function() {
+        it("throws when invalid input", function() {
+            expect(()=>flowerShop.calcPriceOfFlowers('flower',1,2.2)).to.throw("Invalid input!");
+            expect(()=>flowerShop.calcPriceOfFlowers('flower',1,'as')).to.throw("Invalid input!");
+            expect(()=>flowerShop.calcPriceOfFlowers('flower',2.2,1)).to.throw("Invalid input!");
+            expect(()=>flowerShop.calcPriceOfFlowers('flower','as',1)).to.throw("Invalid input!");
+            expect(()=>flowerShop.calcPriceOfFlowers(3,2,1)).to.throw("Invalid input!");
+            expect(()=>flowerShop.calcPriceOfFlowers([],2,1)).to.throw("Invalid input!");
+
+        });
+        it("message when valid input", function() {
+           expect(flowerShop.calcPriceOfFlowers('Daff',2,5)).to.equal(`You need $10.00 to buy Daff!`);
+
+        });
+     });
+     describe("checkFlowersAvailable", function() {
+        it("message when available", function() {
+            expect(flowerShop.checkFlowersAvailable('Daff',['Lily','Rose','Daff'])).to.equal(`The Daff are available!`);
+        });
+        it("message when not available", function() {
+            expect(flowerShop.checkFlowersAvailable('Daff',['Lily','Rose','Orch'])).to.equal(`The Daff are sold! You need to purchase more!`);
+
+        });
+     });
+     describe("sellFlowers", function() {
+        it("throws when invalid input", function() {
+            expect(()=>flowerShop.sellFlowers(['Daff','Orch','Rose'],'text')).to.throw("Invalid input!");
+            expect(()=>flowerShop.sellFlowers(['Daff','Orch','Rose'],2.2)).to.throw("Invalid input!");
+            expect(()=>flowerShop.sellFlowers(['Daff','Orch','Rose'],-2)).to.throw("Invalid input!");
+            expect(()=>flowerShop.sellFlowers(['Daff','Orch','Rose'],5)).to.throw("Invalid input!");
+            expect(()=>flowerShop.sellFlowers(['Daff','Orch','Rose'],3)).to.throw("Invalid input!");
+            
+            expect(()=>flowerShop.sellFlowers('Daff',5)).to.throw("Invalid input!");
+            expect(()=>flowerShop.sellFlowers(6,5)).to.throw("Invalid input!");
+            
+        });
+        it("message when valid input", function() {
+            expect(flowerShop.sellFlowers(['Daff','Orch','Rose'],1)).to.equal("Daff / Rose");
+        });
+     });
+     
+});
