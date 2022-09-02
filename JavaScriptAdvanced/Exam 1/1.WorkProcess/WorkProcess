@@ -1,0 +1,119 @@
+function solve() {
+    let hireButton=document.getElementById('add-worker');
+    hireButton.addEventListener('click',hireWorkerHandler);
+
+    
+    function hireWorkerHandler(e)
+    {
+        e.preventDefault();
+
+        let firstNameElement=document.getElementById('fname');
+        let lastNameElement=document.getElementById('lname');
+        let emailElement=document.getElementById('email');
+        let dateOfBirthElement=document.getElementById('birth');
+        let positionElement=document.getElementById('position');
+        let salaryElement=document.getElementById('salary');
+
+       // if(!firstNameElement.value || !lastNameElement.value || !emailElement.value || !dateOfBirthElement.value || !positionElement.value || !salaryElement.value){
+       //     return;
+      //  }
+
+        let currForm=document.createElement('tr');
+
+        let firstName=document.createElement('td');
+        firstName.textContent=firstNameElement.value;
+        let lastName=document.createElement('td');
+        lastName.textContent=lastNameElement.value
+        let email=document.createElement('td');
+        email.textContent=emailElement.value;
+        let dateOfBirth=document.createElement('td');
+        dateOfBirth.textContent=dateOfBirthElement.value;
+        let position=document.createElement('td');
+        position.textContent=positionElement.value;
+        let salary=document.createElement('td');
+        salary.textContent=salaryElement.value;
+        let buttonsTd=document.createElement('td');
+
+        let firedButton=document.createElement('button');
+        firedButton.textContent="Fired";
+        firedButton.classList.add('fired');
+        firedButton.addEventListener('click',firedHandler)
+        
+        let editButton=document.createElement('button');
+        editButton.textContent="Edit";
+        editButton.classList.add('edit');
+        editButton.addEventListener('click',editHandler)
+
+        buttonsTd.appendChild(firedButton);
+        buttonsTd.appendChild(editButton);
+
+        currForm.appendChild(firstName);
+        currForm.appendChild(lastName);
+        currForm.appendChild(email);
+        currForm.appendChild(dateOfBirth);
+        currForm.appendChild(position);
+        currForm.appendChild(salary);
+        currForm.appendChild(buttonsTd);
+
+        let formSection=document.getElementById('tbody');
+        formSection.appendChild(currForm);
+        
+        let budgetCount=document.getElementById('sum');
+        let sum=Number(budgetCount.textContent);
+        let salNum=Number(salaryElement.value);
+        
+        budgetCount.textContent=Number(sum+salNum).toFixed(2);
+
+        firstNameElement.value='';
+        lastNameElement.value='';
+        emailElement.value='';
+        dateOfBirthElement.value='';
+        positionElement.value='';
+        salaryElement.value='';
+    }
+    function firedHandler(e)
+    {
+        let firedButton=e.target;
+        let formToRemove=firedButton.parentElement.parentElement;
+        
+        let sumToRem=formToRemove.querySelector('td:nth-child(6)');
+        let salNum=Number(sumToRem.textContent);
+        let budgetCount=document.getElementById('sum');
+        let sum=Number(budgetCount.textContent);
+        budgetCount.textContent=Number(sum-salNum).toFixed(2);
+
+        formToRemove.remove();
+    }
+    function editHandler(e)
+    {
+        let editButton=e.target;
+        let formToRemove=editButton.parentElement.parentElement;
+
+        let fNameRem=formToRemove.querySelector('td:nth-child(1)');
+        let lNameRem=formToRemove.querySelector('td:nth-child(2)');
+        let emailRem=formToRemove.querySelector('td:nth-child(3)');
+        let dateRem=formToRemove.querySelector('td:nth-child(4)');
+        let posRem=formToRemove.querySelector('td:nth-child(5)');
+        let sumToRem=formToRemove.querySelector('td:nth-child(6)');
+
+        let firstNameElement=document.getElementById('fname');
+        firstNameElement.value=fNameRem.textContent;
+        let lastNameElement=document.getElementById('lname');
+        lastNameElement.value=lNameRem.textContent;
+        let emailElement=document.getElementById('email');
+        emailElement.value=emailRem.textContent;
+        let dateOfBirthElement=document.getElementById('birth');
+        dateOfBirthElement.value=dateRem.textContent;
+        let positionElement=document.getElementById('position');
+        positionElement.value=posRem.textContent;
+        let salaryElement=document.getElementById('salary');
+        salaryElement.value=sumToRem.textContent;
+        
+        let salNum=Number(sumToRem.textContent);
+        let budgetCount=document.getElementById('sum');
+        let sum=Number(budgetCount.textContent);
+        budgetCount.textContent=Number(sum-salNum).toFixed(2);
+
+        formToRemove.remove();
+    }
+}
