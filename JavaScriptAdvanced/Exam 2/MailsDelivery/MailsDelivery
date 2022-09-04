@@ -1,0 +1,161 @@
+function solve() {
+
+    let addButton=document.getElementById('add');
+    addButton.addEventListener('click',addMailHandler);
+    
+    let resetButton=document.getElementById('reset');
+    resetButton.addEventListener('click',resetHandler);
+    
+    function resetHandler(e)
+    {
+        e.preventDefault();
+        let recipientElement=document.getElementById('recipientName');
+        let titleElement=document.getElementById('title');
+        let messageElement=document.getElementById('message');
+        recipientElement.value='';
+        titleElement.value='';
+        messageElement.value='';
+    }
+
+    function addMailHandler(e)
+    {
+        e.preventDefault();
+
+        let recipientElement=document.getElementById('recipientName');
+        let titleElement=document.getElementById('title');
+        let messageElement=document.getElementById('message');
+
+       if(!recipientElement.value || !titleElement.value || !messageElement.value){
+           return;
+       }
+
+
+        let currMail=document.createElement('li');
+
+        let title=document.createElement('h4');
+        //title.textContent=titleElement.value;
+        title.textContent=`Title: ${titleElement.value}`;
+        
+        let recipient=document.createElement('h4');
+        //recipient.textContent=recipientElement.value;
+        recipient.textContent=`Recipient Name: ${recipientElement.value}`;
+        
+        let message=document.createElement('span');
+        message.textContent=messageElement.value;
+
+        let buttonsDiv=document.createElement('div');
+        buttonsDiv.setAttribute('id','list-action');
+
+        let sendButton=document.createElement('button');
+        sendButton.textContent="Send";
+        sendButton.setAttribute('type','submit');
+        sendButton.setAttribute('id','send');
+        sendButton.addEventListener('click',sendMailHandler)
+
+        let deleteButton=document.createElement('button');
+        deleteButton.textContent="Delete";
+        deleteButton.setAttribute('type','submit');
+        deleteButton.setAttribute('id','delete');
+        deleteButton.addEventListener('click',deleteMailHandler_fromList)
+
+        buttonsDiv.appendChild(sendButton);
+        buttonsDiv.appendChild(deleteButton);
+     
+        currMail.appendChild(title);
+        currMail.appendChild(recipient);
+        currMail.appendChild(message);
+        currMail.appendChild(buttonsDiv);
+
+        let mailSection=document.getElementById('list');
+        mailSection.appendChild(currMail);
+       
+        recipientElement.value='';
+        titleElement.value='';
+        messageElement.value='';
+
+    }
+
+    function sendMailHandler(e)
+    {
+        let sendButton=e.target;
+        let mailToSend=sendButton.parentElement.parentElement;
+        
+
+        let sentMailList=document.querySelector('.sent-mails .sent-list');
+
+        let titleLetter=mailToSend.querySelector('h4');
+        let recipientLetter=mailToSend.querySelector('h4:nth-child(2)');
+
+        let mailToAdd=document.createElement('li');
+        let titleToAdd=document.createElement('span');
+        titleToAdd.textContent=titleLetter.textContent;
+        let recipientToAdd=document.createElement('span');
+        recipientToAdd.textContent=recipientLetter.textContent.replace('Recipient Name','To');
+        
+        let buttonDiv=document.createElement('div');
+        buttonDiv.classList.add('btn');
+        let deleteButton=document.createElement('button');
+        deleteButton.textContent="Delete";
+        deleteButton.setAttribute('type','submit');
+        deleteButton.setAttribute('id','delete');
+        deleteButton.addEventListener('click',deleteMailHandler_fromSent);
+        buttonDiv.appendChild(deleteButton);
+
+        
+        mailToAdd.appendChild(recipientToAdd);
+        mailToAdd.appendChild(titleToAdd);
+        mailToAdd.appendChild(buttonDiv);
+       
+
+        sentMailList.appendChild(mailToAdd);
+
+        mailToSend.remove();
+        
+    }
+    function deleteMailHandler_fromList(e)
+    {
+        let deleteButton=e.target;
+        let mailToDelete=deleteButton.parentElement.parentElement;
+
+        let deleteMailList=document.querySelector('.trash .delete-list');
+        let titleLetter=mailToDelete.querySelector('h4');
+        let recipientLetter=mailToDelete.querySelector('h4:nth-child(2)');
+        
+        let mailToDel=document.createElement('li');
+        let titleToDel=document.createElement('span');
+        titleToDel.textContent=titleLetter.textContent;
+       
+        let recipientToDel=document.createElement('span');
+        recipientToDel.textContent=recipientLetter.textContent.replace('Recipient Name','To');
+
+        mailToDel.appendChild(recipientToDel);
+        mailToDel.appendChild(titleToDel);
+
+        deleteMailList.appendChild(mailToDel);
+
+        mailToDelete.remove();
+    }
+    function deleteMailHandler_fromSent(e)
+    {
+        let deleteButton=e.target;
+        let mailToDelete=deleteButton.parentElement.parentElement;
+
+        let deleteMailList=document.querySelector('.trash .delete-list');
+        let titleLetter=mailToDelete.querySelector('span:nth-child(2)');
+        let recipientLetter=mailToDelete.querySelector('span');
+        
+        let mailToDel=document.createElement('li');
+        let titleToDel=document.createElement('span');
+        titleToDel.textContent=titleLetter.textContent;
+       
+        let recipientToDel=document.createElement('span');
+        recipientToDel.textContent=recipientLetter.textContent;
+
+        mailToDel.appendChild(recipientToDel);
+        mailToDel.appendChild(titleToDel);
+
+        deleteMailList.appendChild(mailToDel);
+
+        mailToDelete.remove();
+    }
+}
