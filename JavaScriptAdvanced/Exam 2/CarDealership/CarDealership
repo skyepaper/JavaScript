@@ -1,0 +1,114 @@
+class CarDealership {
+
+    constructor (name)
+    {
+        this.name=name;
+        this.availableCars=[];
+        this.soldCars=[];
+        this.totalIncome=0;
+    }
+    addCar(model, horsepower, price, mileage)
+    {
+        if(!model || horsepower<0 || horsepower%1!==0 || price<0 || mileage<0)
+        {
+            throw new Error(`Invalid input!`);
+        }
+
+        let curCar={
+            model:model,
+            horsepower:horsepower,
+            price:price,
+            mileage:mileage
+        }
+        this.availableCars.push(curCar);
+
+        return `New car added: ${curCar.model} - ${curCar.horsepower} HP - ${curCar.mileage.toFixed(2)} km - ${curCar.price.toFixed(2)}$`;
+
+    }
+
+    sellCar(model, desiredMileage)
+    {
+        let carToSell=this.availableCars.find(c=>c.model===model);
+        if(!carToSell)
+        {
+            throw new Error(`${model} was not found!`);
+        }
+
+    
+            if(carToSell.mileage>desiredMileage && carToSell.mileage-desiredMileage<=40000)
+            {
+                carToSell.price=(carToSell.price*0.95).toFixed(2);
+            }
+            if(carToSell.mileage>desiredMileage && carToSell.mileage-desiredMileage>40000)
+            {
+                carToSell.price=(carToSell.price*0.90).toFixed(2);
+            }
+
+            this.availableCars=this.availableCars.filter(c=>c.model!==carToSell.model);
+
+
+            this.totalIncome+=Number(carToSell.price);
+            let soldCar={
+                model:carToSell.model, 
+                horsepower:carToSell.horsepower, 
+                soldPrice:Number(carToSell.price).toFixed(2)
+            }
+            this.soldCars.push(soldCar);
+
+            return `${model} was sold for ${soldCar.soldPrice}$`;
+
+        }
+
+    currentCar()
+    {
+        let result=[];
+        result.push(`-Available cars:`);
+
+        if(this.availableCars.length===0)
+        {
+            return `There are no available cars`;
+        }
+        this.availableCars.forEach(car=>{
+            result.push(this.carReport(car));
+        });
+
+        return result.join("\n")
+    }
+    carReport(car)
+    {
+        return `---${car.model} - ${car.horsepower} HP - ${car.mileage.toFixed(2)} km - ${car.price.toFixed(2)}$`;
+    }
+    saleReport(car)
+    {
+        return `---${car.model} - ${car.horsepower} HP - ${car.soldPrice}$`;
+    }
+    salesReport(criteria)
+    {
+        let result=[];
+        result.push(`-${this.name} has a total income of ${this.totalIncome.toFixed(2)}$`);
+        result.push(`-${this.soldCars.length} cars sold:`);
+        
+        if(criteria==='horsepower'){
+            this.soldCars=this.soldCars
+                 
+                  .sort((a,b)=> b.horsepower-a.horsepower)
+                  .forEach(car=>{
+                    result.push(this.saleReport(car));
+                   });
+        }
+        else if(criteria==='model')
+        {
+            this.soldCars=this.soldCars
+            
+            .sort((a,b)=> a.model.localeCompare(b.model))
+            .forEach(car=>{
+              result.push(this.saleReport(car));
+             });
+        }
+       
+        else {
+            throw new Error("Invalid criteria!");
+        }
+        return result.join("\n")
+    }
+}
