@@ -1,0 +1,57 @@
+describe("Tests", function() {
+    describe("searchCar", function() {
+        it("throw when shop is not array", function() {
+            expect(()=>rentCar.searchCar(1,'model')).to.throw("Invalid input!");
+            expect(()=>rentCar.searchCar('avc','model')).to.throw("Invalid input!");
+        });
+        it("throw when model is not string", function() {
+            expect(()=>rentCar.searchCar(['aba'],123)).to.throw("Invalid input!");
+            expect(()=>rentCar.searchCar(['aba'],['model'])).to.throw("Invalid input!");
+           
+        });
+        it("throw when no match", function() {
+            expect(()=>rentCar.searchCar(['aba'],'ads')).to.throw('There are no such models in the catalog!');
+           
+        });
+        it("message when match", function() {
+            expect(rentCar.searchCar(['aaa','bbb','bbb'],'bbb')).to.equal(`There is 2 car of model bbb in the catalog!`);
+           
+        });
+     });
+    describe("calculatePriceOfCar", function() {
+       it("throw when days is not integer", function() {
+            expect(()=>rentCar.calculatePriceOfCar('model',1.2)).to.throw("Invalid input!");
+            expect(()=>rentCar.calculatePriceOfCar('model','as')).to.throw("Invalid input!");
+            expect(()=>rentCar.calculatePriceOfCar('model',[1,2])).to.throw("Invalid input!");
+        });
+        it("throw when model is not string", function() {
+           expect(()=>rentCar.calculatePriceOfCar(123,123)).to.throw("Invalid input!");
+          expect(()=>rentCar.calculatePriceOfCar(['aba'],123)).to.throw("Invalid input!");
+        });
+        it("throw when model is not in catalog", function() {
+            expect(()=>rentCar.calculatePriceOfCar('model',123)).to.throw('No such model in the catalog!');
+                
+           });
+           it("message when model is in catalog", function() {
+            expect(rentCar.calculatePriceOfCar('Toyota',10)).to.equal('You choose Toyota and it will cost $400!');
+                
+           });
+        });
+    describe("checkBudget", function() {
+        it("throw when costPerDay,days or budget is not integer", function() {
+            
+            expect(()=>rentCar.checkBudget(30,10,'as')).to.throw("Invalid input!");
+            expect(()=>rentCar.checkBudget(30,'as',300)).to.throw("Invalid input!");
+            expect(()=>rentCar.checkBudget('as',10,300)).to.throw("Invalid input!");
+        });
+        it("message when budget is enough", function() {
+            
+            expect(rentCar.checkBudget(30,10,400)).to.equal(`You rent a car!`);
+            expect(rentCar.checkBudget(30,10,300)).to.equal(`You rent a car!`);
+        });
+        it("message when budget is not enough", function() {
+            
+            expect(rentCar.checkBudget(30,10,250)).to.equal('You need a bigger budget!');
+        });
+    });
+});
