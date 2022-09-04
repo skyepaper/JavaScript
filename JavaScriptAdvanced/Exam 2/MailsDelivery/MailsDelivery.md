@@ -1,21 +1,9 @@
-Problem 1. Mails Delivery
-Environment Specifics
-Please, be aware that every JS environment may behave differently when executing code. Certain things that work in the browser are not supported in Node.js, which is the environment used by Judge.
-The following actions are NOT supported:
-⦁	.forEach() with NodeList (returned by querySelector() and querySelectorAll())
-⦁	.forEach() with HTMLCollection (returned by getElementsByClassName() and element.children)
-⦁	Using the spread-operator (...) to convert a NodeList into an array
-⦁	append() in Judge (use only appendChild())
-⦁	replaceWith() in Judge
-⦁	replaceAll() in Judge
-⦁	closest() in Judge
-⦁	replaceChildren()
-⦁	Always turn the collection into a JS array (forEach, forOf, et.)
-If you want to perform these operations, you may use Array.from() to first convert the collection into an array. 
-Use the provided skeleton to solve this problem.
-Note: You can't and you have no permission to change directly the given HTML code (index.html file).
+## Mails Delivery
+
  
 Your Task
+
+ ![alt text](https://github.com/skyepaper/JavaScript/blob/main/JavaScriptAdvanced/Exam%201/1.WorkProcess/Pics/Pic%20(1).bmp)  
 Write the missing JavaScript code to make the Mails Delivery work as expected:
 ⦁	Getting the information from the form
  
