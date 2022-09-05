@@ -1,0 +1,86 @@
+import viewChanger from "../viewChanger.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('form');
+    form.addEventListener('submit',editAlbum);
+}
+
+export async function getView(id)
+{
+    try
+    {
+        let url=`http://localhost:3030/data/albums/${id}`;
+        let album=await jsonRequest(url);
+
+        let nameInput=section.querySelector('input[name="name"]');
+        let imageInput=section.querySelector('input[name="imgUrl"]');
+        let priceInput=section.querySelector('input[name="price"]');
+        let dateInput=section.querySelector('input[name="releaseDate"]');
+        let artistInput=section.querySelector('input[name="artist"]');
+        let genreInput=section.querySelector('input[name="genre"]');
+        let descriptionInput=section.querySelector('textarea[name="description"]');
+        
+        let form=section.querySelector('form');
+        form.dataset.id=id;
+
+        nameInput.value=album.name;
+        imageInput.value=album.imgUrl;
+        priceInput.value=album.price;
+        dateInput.value=album.releaseDate;
+        artistInput.value=album.artist;
+        genreInput.value=album.genre;
+        descriptionInput.value=album.description;
+       
+        return section;
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+async function editAlbum(e)
+{
+    e.preventDefault();
+    try
+    {
+        let form=e.target;
+        let formData=new FormData(form);
+        let id=form.dataset.id;
+
+        let newAlbum={
+            name:formData.get('name'),
+            imgUrl:formData.get('imgUrl'),
+            price:formData.get('price'),
+            releaseDate:formData.get('releaseDate'),
+            artist:formData.get('artist'),
+            genre:formData.get('genre'),
+            description:formData.get('description')
+        }
+
+        let url=`http://localhost:3030/data/albums/${id}`;
+        let result=await jsonRequest(url,'Put',newAlbum,true);
+        console.log(result);
+        form.reset();
+        viewChanger.navigateTo('album-details',id);
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+let editAlbumPage={
+    setupSection,
+    getView,
+    editAlbum
+}
+
+export default editAlbumPage;
