@@ -1,0 +1,85 @@
+import auth from "../helpers/auth.js";
+import { jsonRequest } from "../helpers/httpService.js";
+import viewChanger from "../viewChanger.js";
+import homePage from "./home.js";
+import ce from "../helpers/htmlHelpers.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView(albumId)
+{
+    let url=`http://localhost:3030/data/albums/${albumId}`;
+    let albumDetail=await jsonRequest(url);
+    console.log(albumDetail);
+
+    [...section.children].forEach(x=>x.remove());
+
+    let albumDetails=createAlbumDetails(albumDetail);
+    section.appendChild(albumDetails);
+   
+    section.querySelectorAll('.link').forEach(e=>e.addEventListener('click',viewChanger.changeViewHandler))
+
+    return section;
+}
+
+
+async function deleteAlbum(albumId)
+{
+    try
+    {
+        let url=`http://localhost:3030/data/albums/${albumId}`;
+        let result=await jsonRequest(url,'Delete',undefined,true);
+       return homePage.getView();
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+function createAlbumDetails(album)
+{
+    let image=ce('div',{class:'albumCover'},ce('img',{src:`${album.imgUrl}`}));
+
+    let name=ce('h1',undefined,`Name: ${album.name}`);
+    let artist=ce('h3',undefined,`Artist: ${album.artist}`);
+    let genre=ce('h4',undefined,`Genre: ${album.genre}`);
+    let price=ce('h4',undefined,`Price: ${album.price}`);
+    let date=ce('h4',undefined,`Date: ${album.releaseDate}`);
+    let description=ce('p',undefined,`Description: ${album.description}`);
+    
+    let albumText=ce('div',{class:"albumText"},name,artist,genre,price,date,description);
+
+    let buttons=ce('div',{class:"actionBtn"});
+   
+    let editButton=ce('a',{class:'edit link','data-route':'edit', 'data-id':`${album._id}`},'Edit'); 
+    let deleteButton=ce('a',{class:'remove link','data-route':'delete', 'data-id':`${album._id}`},'Delete'); 
+  
+    let info=ce('div',{class:"albumInfo"},albumText,buttons);
+
+
+    if(auth.getUserId()===album._ownerId)
+    {
+            buttons.appendChild(editButton);
+            buttons.appendChild(deleteButton);
+    }
+
+    let element=ce('div',{class:'wrapper'},image,info);
+
+    return element;
+    
+}
+
+let albumDetailsPage={
+    setupSection,
+    getView,
+    deleteAlbum
+}
+
+export default albumDetailsPage;
