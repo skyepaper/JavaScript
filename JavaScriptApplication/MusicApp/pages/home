@@ -1,0 +1,24 @@
+import viewChanger from "../viewChanger.js";
+import ce from "../helpers/htmlHelpers.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView()
+{
+   
+    return section;
+}
+
+
+let homePage={
+    setupSection,
+    getView
+}
+
+export default homePage;
