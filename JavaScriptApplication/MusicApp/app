@@ -1,0 +1,31 @@
+import homePage from "./pages/home.js";
+import loginPage from "./pages/login.js";
+import registerPage from "./pages/register.js";
+import viewChanger from "./viewChanger.js";
+import nav from "./pages/nav.js";
+
+import catalogPage from "./pages/catalog.js";
+
+import addAlbumPage from "./pages/addAlbum.js";
+import albumDetailsPage from "./pages/albumDetails.js";
+import editAlbumPage from "./pages/editAlbum.js";
+import searchPage from "./pages/search.js";
+
+setup();
+
+async function setup()
+{
+    nav.setupSection(document.getElementById('navbar'));
+    homePage.setupSection(document.getElementById('welcomePage'));
+    loginPage.setupSection(document.getElementById('loginPage'));
+    registerPage.setupSection(document.getElementById('registerPage'));
+    catalogPage.setupSection(document.getElementById('catalogPage'));
+    addAlbumPage.setupSection(document.getElementById('createPage'));
+    albumDetailsPage.setupSection(document.getElementById('detailsPage'));
+    editAlbumPage.setupSection(document.getElementById('editPage'));
+    searchPage.setupSection(document.getElementById('searchPage'));
+
+
+    viewChanger.initialize(document.querySelectorAll('.link'));
+    viewChanger.navigateTo('home');
+}
