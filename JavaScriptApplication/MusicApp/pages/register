@@ -1,0 +1,62 @@
+import auth from "../helpers/auth.js";
+import { jsonRequest } from "../helpers/httpService.js";
+import viewChanger from "../viewChanger.js";
+import nav from "./nav.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('#registerForm');
+    form.addEventListener('submit',registerUser);
+}
+
+export async function getView()
+{
+    return section;
+}
+
+export async function registerUser(e)
+{
+    e.preventDefault();
+    let form=e.target;
+    let formData=new FormData(form);
+    
+    let email=formData.get('email');
+    let password=formData.get('password');
+    let repeatPassword=formData.get('conf-pass');
+    
+    if(email==='' || password===''|| repeatPassword===''    
+       || password.length<6 || password!==repeatPassword)
+    {
+        form.reset();
+    }
+else
+{
+    let user={
+        email:email,
+        password:password
+    }
+
+    let url='http://localhost:3030/users/register';
+    let result=await jsonRequest(url,'Post',user);
+    auth.setAuthToken(result.accessToken);
+    auth.setUserId(result._id);
+    //auth.setUsername(result.email);
+    nav.loginUser();
+
+    form.reset();
+    viewChanger.navigateTo('home');
+}
+
+    
+}
+
+let registerPage={
+    setupSection,
+    getView,
+    registerUser
+}
+
+export default registerPage;
