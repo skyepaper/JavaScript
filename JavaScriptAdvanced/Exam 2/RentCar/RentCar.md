@@ -23,4 +23,4 @@ A function that accepts three parameters (numbers):
 ### JS Code
 To ease you in the process, you are provided with an implementation that meets all of the specification requirements for the rentCar object:
 
-![alt text](https://github.com/skyepaper/JavaScript/blob/main/JavaScriptAdvanced/Exam%202/MailsDelivery/Pics/Pic%20(2).bmp)  
+![alt text](https://github.com/skyepaper/JavaScript/blob/main/JavaScriptAdvanced/Exam%202/RentCar/Pic%20(10).bmp)  
