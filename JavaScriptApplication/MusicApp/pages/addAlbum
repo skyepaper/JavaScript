@@ -1,0 +1,75 @@
+import viewChanger from "../viewChanger.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('#create-form');
+    form.addEventListener('submit',addAlbum);
+}
+
+async function addAlbum(e)
+{
+    e.preventDefault();
+    try
+    {
+        let form=e.target;
+        let formData=new FormData(form);
+
+        let name=formData.get('name');
+        let imgUrl=formData.get('imgUrl');
+        let price=formData.get('price');
+        let releaseDate=formData.get('releaseDate');
+        let artist=formData.get('artist');
+        let genre=formData.get('genre');
+        let description=formData.get('description');
+
+        if(name==='' || imgUrl==='' || price==='' || releaseDate==='' 
+                     || artist==='' || genre==='' || description==='')
+        {
+            form.reset();
+        }
+
+        else
+        {
+            let newAlbum={
+                name:name,
+                imgUrl:imgUrl,
+                price:price,
+                releaseDate:releaseDate,
+                artist:artist,
+                genre:genre,
+                description:description
+            }
+    
+           
+            let url='http://localhost:3030/data/albums';
+            let result=await jsonRequest(url,'Post',newAlbum,true);
+            console.log(result);
+            form.reset();
+            viewChanger.navigateTo('home');
+        }
+       
+        }
+    catch(err)
+    {
+        form.reset();
+        console.error(err);
+        alert(err);
+    }
+}
+
+export async function getView()
+{
+    return section;
+}
+
+let addAlbumPage={
+    setupSection,
+    getView,
+    addAlbum
+}
+
+export default addAlbumPage;
