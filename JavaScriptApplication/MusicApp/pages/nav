@@ -1,0 +1,51 @@
+import auth from "../helpers/auth.js";
+import viewChanger from "../viewChanger.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    if(auth.isLoggedIn())
+    {
+        this.loginUser();
+    }
+    else
+    {
+        this.logoutUser();
+    }
+}
+
+export async function logoutUser()
+{
+    let userDivs=section.querySelectorAll('.user');
+    [...userDivs].forEach(e=>e.classList.add('hidden'));
+    
+    let guestDivs=section.querySelectorAll('.guest');
+    [...guestDivs].forEach(e=>e.classList.remove('hidden'));
+
+}
+
+export async function loginUser()
+{
+    let userDivs=section.querySelectorAll('.user');
+    [...userDivs].forEach(e=>e.classList.remove('hidden'));
+    
+    let guestDivs=section.querySelectorAll('.guest');
+    [...guestDivs].forEach(e=>e.classList.add('hidden'));
+
+}
+
+export async function getView()
+{
+    return section;
+}
+
+let nav={
+    setupSection,
+    getView,
+    loginUser,
+    logoutUser
+}
+
+export default nav;
