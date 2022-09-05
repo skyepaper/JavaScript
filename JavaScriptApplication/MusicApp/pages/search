@@ -1,0 +1,85 @@
+import viewChanger from "../viewChanger.js";
+import ce from "../helpers/htmlHelpers.js";
+import auth from "../helpers/auth.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView()
+{
+    let button=section.querySelector('.button-list');
+
+    let albumsContainer=section.querySelector('.search-result');
+    [...albumsContainer.children].forEach(el =>el.remove());
+
+    button.addEventListener('click',search);
+
+    return section;
+}
+
+async function search(e)
+{
+    e.preventDefault();
+    let searchInput=section.querySelector('#search-input');
+
+    let url=`http://localhost:3030/data/albums?where=name%20LIKE%20%22${searchInput.value}%22`;
+
+    let albums=await jsonRequest(url);
+
+    let albumsContainer=section.querySelector('.search-result');
+    [...albumsContainer.children].forEach(el =>el.remove());
+    
+
+    if(albums.length===0)
+    {
+        let noResult=ce('p',{class:'no-result'},'No result.');
+        albumsContainer.appendChild(noResult);
+    }
+    else
+    {
+    albums.map(a=>
+        {
+            let albumToAdd=createHtmlAlbum(a);
+            albumsContainer.appendChild(albumToAdd);
+        });
+    
+    albumsContainer.querySelectorAll('.link').forEach(l=>l.addEventListener('click',viewChanger.changeViewHandler));
+}
+}
+
+function createHtmlAlbum(album)
+{
+    let image=ce('img',{src:`${album.imgUrl}`});
+
+    let name=ce('p',{class:"name"},`Name: ${album.name}`);
+    let artist=ce('p',{class:"artist"},`Artist: ${album.artist}`);
+    let genre=ce('p',{class:"genre"},`Genre: ${album.genre}`);
+    let price=ce('p',{class:"price"},`Price: ${album.price}`);
+    let date=ce('p',{class:"date"},`Release Date: ${album.releaseDate}`);
+
+    let info=ce('div',{class:"text-center"},name,artist,genre,price,date);
+
+    let button=ce('a',{class:'button link' ,'data-route':'album-details','data-id':`${album._id}`},'Details');
+    let buttons=ce('div',{class:"btn-group"});
+
+    let div=ce('div',undefined,info,buttons);
+    let element=ce('div',{class:"card-box"},image,div);
+    
+    if(auth.isLoggedIn())
+    {
+        buttons.appendChild(button);
+    }
+
+    return element;
+}
+let myBooksPage={
+    setupSection,
+    getView
+}
+
+export default myBooksPage;
