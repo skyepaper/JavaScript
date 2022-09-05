@@ -1,0 +1,59 @@
+import homePage from "./pages/home.js";
+import loginPage from "./pages/login.js";
+import registerPage from "./pages/register.js";
+import auth from "./helpers/auth.js";
+
+import catalogPage from "./pages/catalog.js";
+import albumDetailsPage from "./pages/albumDetails.js";
+import addAlbumPage from "./pages/addAlbum.js";
+import editAlbumPage from "./pages/editAlbum.js";
+import searchPage from "./pages/search.js";
+
+let views={
+    'home':async()=>await homePage.getView(),
+    'login':async()=>await loginPage.getView(),
+    'register':async()=>await registerPage.getView(),
+    'logout':async()=>await auth.logout(),
+    'catalog':async()=>await catalogPage.getView(),
+    'add-album':async()=>await addAlbumPage.getView(),
+    'album-details':async(id)=>await albumDetailsPage.getView(id),
+    'edit':async(id)=>await editAlbumPage.getView(id),
+    'delete':async(id)=>await albumDetailsPage.deleteAlbum(id),
+    'search':async()=>await searchPage.getView()
+
+}
+
+export async function navigateTo(route,id)
+    {
+        if(views.hasOwnProperty(route))
+        {
+            let view=await views[route](id);
+            let appElement=document.getElementById('main-content');
+            appElement.querySelectorAll('.view').forEach(e => e.remove());
+            appElement.appendChild(view); 
+        }
+    }
+
+    function initialize(allLinkElements)
+    {
+        allLinkElements.forEach(a=>a.addEventListener('click',changeViewHandler));
+    }
+
+    export async function changeViewHandler(e)
+    {
+        let element=e.target.matches('.link')
+        ? e.target
+        : e.target.closest('.link');
+
+        let route=element.dataset.route;
+        let id=element.dataset.id;
+        navigateTo(route,id);
+    }
+
+    let viewChanger={
+        navigateTo,
+        initialize,
+        changeViewHandler
+    }
+    
+    export default viewChanger;
