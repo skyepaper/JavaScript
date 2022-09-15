@@ -1,0 +1,151 @@
+import auth from "../helpers/auth.js";
+import { jsonRequest } from "../helpers/httpService.js";
+import viewChanger from "../viewChanger.js";
+import homePage from "./home.js";
+import ce from "../helpers/htmlHelpers.js";
+
+let section=undefined;
+let form=undefined;
+let gameId=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView(gameId)
+{
+    let url=`http://localhost:3030/data/games/${gameId}`;
+    let gameDetail=await jsonRequest(url);
+
+    [...section.children].forEach(x=>x.remove());
+
+    createGameDetails(gameDetail,section);
+    
+    section.querySelectorAll('.link').forEach(e=>e.addEventListener('click',viewChanger.changeViewHandler));
+
+    return section;
+}
+
+async function deleteGame(gameId)
+{
+    try
+    {
+        let url=`http://localhost:3030/data/games/${gameId}`;
+        let result=await jsonRequest(url,'Delete',undefined,true);
+       return homePage.getView();
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+async function createGameDetails(game,section)
+{
+    let label=ce('h1',undefined,`Game Details`);
+    
+    let image=ce('img',{class:'game-img', src:`${game.imageUrl}`});
+    let title=ce('h1',undefined,`${game.title}`);
+    let maxLevel=ce('span',{class:'levels'},`MaxLevel: ${game.maxLevel}`)
+    let type=ce('p',{class:'type'},`${game.category}`);
+
+    let gameHeader=ce('div',{class:'game-header'},image,title,maxLevel,type);
+    let description=ce('p',{class:'text'},`${game.summary}`);
+
+    let label2=ce('h2',undefined,`Comments:`);
+    let commentsContainer=ce('ul',{id:"comments-list"});
+    let noComment=ce('p',{class:'no-comment'},'No comments.')
+
+    gameId=game._id;
+   
+
+    let detailsComments=ce('div',{class:'details-comments'},label2,commentsContainer,noComment);
+
+    let editButton=ce('a',{class:'button link','data-route':'edit', 'data-id':`${gameId}`},'Edit'); 
+    let deleteButton=ce('a',{class:'button link','data-route':'delete', 'data-id':`${gameId}`},'Delete'); 
+    
+    let buttons=ce('div',{class:'buttons'});
+
+    let userId=auth.getUserId();
+
+    if(game._ownerId===userId)
+    {
+        buttons.appendChild(editButton);
+        buttons.appendChild(deleteButton);
+    }
+    else
+    {
+        let url=`http://localhost:3030/data/comments?where=gameId%3D%22${gameId}%22`;
+        let gameComments=await jsonRequest(url);
+
+        if(gameComments.length===0)
+    {
+        noComment.classList.remove('hidden');
+    }
+    else
+    {
+        noComment.classList.add('hidden');
+
+        gameComments.forEach(e=>
+            {
+                let newCommentInput=e.comment;
+                let newComment=ce('li',{class:'comment'},ce('p',undefined,`Content: ${newCommentInput}`));
+                commentsContainer.appendChild(newComment);
+            });
+    }
+    }
+    
+    let infoSection=ce('div',{class:'info-section'},gameHeader,description,detailsComments,buttons);
+    
+    let label3=ce('label',undefined,'Add new comment:');
+
+    let textArea=ce('textarea',{name:"comment", placeholder:"Comment......"});
+    let addButton=ce('input',{class:"btn submit",type:"submit",value:"Add Comment"});
+
+    form=ce('form',{class:"form",id:'comment-form'},textArea,addButton);
+    let article=ce('article', {class:"create-comment hidden"},label3,form);
+
+    
+    if(auth.isLoggedIn() && game._ownerId!==userId)
+    {
+        article.classList.remove('hidden');
+        form.addEventListener('submit',addNewComment);
+    }
+    else
+    {
+        article.classList.add('hidden');
+    }
+    
+    section.appendChild(label);
+    section.appendChild(infoSection);
+    section.appendChild(article);
+
+}
+
+async function addNewComment(e)
+{
+    e.preventDefault();
+    
+    let formData=new FormData(form);
+
+            let newComment=
+            {
+                gameId:gameId,
+                comment:formData.get('comment')
+            }
+            let url=`http://localhost:3030/data/comments`;
+            let result=await jsonRequest(url,'Post',newComment,true);
+            console.log(result);
+            form.reset();
+            viewChanger.navigateTo('game-details',gameId);
+}
+
+let gameDetailsPage={
+    setupSection,
+    getView,
+    deleteGame
+}
+
+export default gameDetailsPage;
