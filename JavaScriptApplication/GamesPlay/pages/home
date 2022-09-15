@@ -1,0 +1,61 @@
+import viewChanger from "../viewChanger.js";
+import ce from "../helpers/htmlHelpers.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView()
+{
+    let url='http://localhost:3030/data/games?sortBy=_createdOn%20desc&distinct=category';
+
+    let games=await jsonRequest(url);
+
+    let gamesContainer=section.querySelector('#home-page');
+    gamesContainer.querySelectorAll('.game').forEach(el =>el.remove());
+    let noGameElement=section.querySelector('.no-articles');
+   
+if(games.length===0)
+{
+    
+    noGameElement.classList.remove('hidden');
+}
+else
+{
+    noGameElement.classList.add('hidden');
+    let gamesSlice=games.slice(0,3);
+    gamesSlice.map(g=>
+        {
+            let gameToAdd=createHtmlGame(g);
+            gamesContainer.appendChild(gameToAdd);
+        });
+    
+    gamesContainer.querySelectorAll('.link').forEach(l=>l.addEventListener('click',viewChanger.changeViewHandler));
+    }
+    return section;
+}
+   
+
+
+function createHtmlGame(game)
+{
+    let image=ce('div',{class:'image-wrap'},ce('img',{src:`${game.imageUrl}`}));
+    let title=ce('h3',undefined,`${game.title}`);
+    let rating=ce('div',{class:'rating'},ce('span',undefined,'☆'),ce('span',undefined,'☆'),ce('span',undefined,'☆'),ce('span',undefined,'☆'),ce('span',undefined,'☆'));
+    let button=ce('div',{class:'data-buttons'},ce('a',{class:'btn details-btn link','data-route':'game-details','data-id':`${game._id}`},'Details'));
+    
+    let element=ce('div',{class:'game'},image,title,rating,button);
+
+    return element;
+}
+
+let homePage={
+    setupSection,
+    getView
+}
+
+export default homePage;
