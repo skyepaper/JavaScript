@@ -1,0 +1,60 @@
+import viewChanger from "../viewChanger.js";
+import ce from "../helpers/htmlHelpers.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+}
+
+export async function getView()
+{
+    let url='http://localhost:3030/data/games?sortBy=_createdOn%20desc';
+    let games=await jsonRequest(url);
+
+    section.querySelectorAll('.allGames').forEach(el =>el.remove());
+    let noGameElement=section.querySelector('.no-articles');
+   
+if(games.length===0)
+{
+    
+    noGameElement.classList.remove('hidden');
+}
+else
+{
+    noGameElement.classList.add('hidden');
+    games.map(g=>
+        {
+            let gameToAdd=createHtmlGame(g);
+            section.appendChild(gameToAdd);
+        });
+    
+    section.querySelectorAll('.link').forEach(l=>l.addEventListener('click',viewChanger.changeViewHandler));
+    }
+    return section;
+}
+   
+
+
+function createHtmlGame(game)
+{
+    let image=ce('img',{src:`${game.imageUrl}`});
+    let type=ce('h6',undefined,`${game.category}`);
+    let title=ce('h2',undefined,`${game.title}`);
+    let button=ce('a',{class:'details-button link','data-route':'game-details','data-id':`${game._id}`},'Details');
+
+    let info=ce('div',{class:'allGames-info'},image,type,title,button);
+    
+    let element=ce('div',{class:'allGames'},info);
+
+    return element;
+}
+
+let homePage={
+    setupSection,
+    getView
+}
+
+export default homePage;
