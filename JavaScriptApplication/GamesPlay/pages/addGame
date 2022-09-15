@@ -1,0 +1,71 @@
+import viewChanger from "../viewChanger.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('#create');
+    form.addEventListener('submit',addGame);
+}
+
+async function addGame(e)
+{
+    e.preventDefault();
+    let form=e.target;
+    try
+    {
+        let formData=new FormData(form);
+
+        let title=formData.get('title');
+        let category=formData.get('category');
+        let maxLevel=formData.get('maxLevel');
+        let imageUrl=formData.get('imageUrl');
+        let summary=formData.get('summary');
+        
+
+        if(title==='' || category==='' || maxLevel==='' || imageUrl==='' || summary==='')
+        {
+            form.reset();
+        }
+
+        else
+        {
+            let newGame={
+                title:title,
+                category:category,
+                maxLevel:maxLevel,
+                imageUrl:imageUrl,
+                summary:summary
+            }
+    
+           
+            let url='http://localhost:3030/data/games';
+            let result=await jsonRequest(url,'Post',newGame,true);
+            console.log(result);
+            form.reset();
+            viewChanger.navigateTo('home');
+        }
+       
+        }
+    catch(err)
+    {
+        form.reset();
+        console.error(err);
+        alert(err);
+    }
+}
+
+export async function getView()
+{
+    return section;
+}
+
+let addGamePage={
+    setupSection,
+    getView,
+    addGame
+}
+
+export default addGamePage;
