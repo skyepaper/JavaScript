@@ -1,0 +1,30 @@
+import homePage from "./pages/home.js";
+import loginPage from "./pages/login.js";
+import registerPage from "./pages/register.js";
+import viewChanger from "./viewChanger.js";
+import nav from "./pages/nav.js";
+
+import catalogPage from "./pages/catalog.js";
+import addGamePage from "./pages/addGame.js";
+import gameDetailsPage from "./pages/gameDetails.js";
+import editGamePage from "./pages/editGame.js";
+//import myBooksPage from "./pages/myBooks.js";
+
+setup();
+
+async function setup()
+{
+    nav.setupSection(document.getElementById('navbar'));
+    homePage.setupSection(document.getElementById('welcome-world'));
+    loginPage.setupSection(document.getElementById('login-page'));
+    registerPage.setupSection(document.getElementById('register-page'));
+    catalogPage.setupSection(document.getElementById('catalog-page'));
+    addGamePage.setupSection(document.getElementById('create-page'));
+    gameDetailsPage.setupSection(document.getElementById('game-details'));
+    editGamePage.setupSection(document.getElementById('edit-page'));
+    //myBooksPage.setupSection(document.getElementById('my-books-page'));
+
+
+    viewChanger.initialize(document.querySelectorAll('.link'));
+    viewChanger.navigateTo('home');
+}
