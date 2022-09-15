@@ -1,44 +1,33 @@
-import auth from "../helpers/auth.js";
-
-export async function jsonRequest(url, method,body,isAuthorized,skipResult)
+export default function ce(tag,attributesObj, ...params)
 {
-    if(method===undefined)
+    let element=document.createElement(tag);
+    let text=params[0];
+    if(params.length===1 && typeof(text)!=='object')
     {
-        method='Get';
+        if(['input','textarea'].includes(tag))
+        {
+            element.value=text;
+        }
+        else
+        {
+            element.textContent=text;
+        }
+    }
+    else
+    {
+        params.forEach(el=>
+            {
+                element.appendChild(el);
+            });
     }
 
-    let headers={};
-    if(['post','put','patch'].includes(method.toLowerCase()))
+    if(attributesObj !== undefined)
     {
-        headers['Content-Type']='application/json';
+        Object.keys(attributesObj).forEach(key=>
+            {
+                element.setAttribute(key,attributesObj[key]);
+            });
     }
 
-    if(isAuthorized)
-    {
-        headers['X-Authorization']=auth.getAuthToken();
-    }
-
-    let options={
-        headers,
-        method
-    };
-
-    if(body!==undefined)
-    {
-        options.body=JSON.stringify(body);
-    }
-
-    let response=await fetch(url,options);
-    if(!response.ok)
-    {
-        let message=await response.text();
-        throw new Error(`${response.status}: ${response.statusText}\n${message}`);
-    }
-
-    let result=undefined;
-    if(!skipResult)
-    {
-        result=await response.json();
-    }
-    return result;
+    return element;
 }
