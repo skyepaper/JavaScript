@@ -1,0 +1,80 @@
+import viewChanger from "../viewChanger.js";
+import { jsonRequest } from "../helpers/httpService.js";
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('form');
+    form.addEventListener('submit',editGame);
+}
+
+export async function getView(id)
+{
+    try
+    {
+        let url=`http://localhost:3030/data/games/${id}`;
+        let game=await jsonRequest(url);
+
+        let titleInput=section.querySelector('input[name="title"]');
+        let typeInput=section.querySelector('input[name="category"]');
+        let levelInput=section.querySelector('input[name="maxLevel"]');
+        let imageInput=section.querySelector('input[name="imageUrl"]');
+        let descriptionInput=section.querySelector('textarea[name="summary"]');
+        
+        let form=section.querySelector('form');
+        form.dataset.id=id;
+
+        titleInput.value=game.title;
+        typeInput.value=game.category;
+        levelInput.value=game.maxLevel
+        imageInput.value=game.imageUrl;
+        descriptionInput.value=game.summary;
+       
+        return section;
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+async function editGame(e)
+{
+    e.preventDefault();
+    try
+    {
+        let form=e.target;
+        let formData=new FormData(form);
+        let id=form.dataset.id;
+
+        let newGame={
+            title:formData.get('title'),
+            category:formData.get('category'),
+            maxLevel:formData.get('maxLevel'),
+            imageUrl:formData.get('imageUrl'),
+            summary:formData.get('summary')
+        }
+
+        let url=`http://localhost:3030/data/games/${id}`;
+        let result=await jsonRequest(url,'Put',newGame,true);
+        console.log(result);
+        form.reset();
+        viewChanger.navigateTo('game-details',id);
+    }
+    catch(err)
+    {
+        console.error(err);
+        alert(err);
+    }
+}
+
+let editGamePage={
+    setupSection,
+    getView,
+    editGame
+}
+
+export default editGamePage;
