@@ -1,0 +1,57 @@
+
+import auth from "../helpers/auth.js";
+import viewChanger from "../viewChanger.js";
+import { jsonRequest } from "../helpers/httpService.js";
+import homePage from "./home.js";
+import nav from "./nav.js";
+
+
+let section=undefined;
+
+export function setupSection(domElement)
+{
+    section=domElement;
+    let form=section.querySelector('#login');
+    form.addEventListener('submit',loginUser);
+
+    section.querySelectorAll('.link').forEach(l=>l.addEventListener('click',viewChanger.changeViewHandler));
+}
+
+export async function getView()
+{
+    return section;
+}
+
+export async function loginUser(e)
+{
+    e.preventDefault();
+    let form=e.target;
+    let formData=new FormData(form);
+    let user={
+        email:formData.get('email'),
+        password:formData.get('password')
+    }
+
+    try
+    {let url='http://localhost:3030/users/login';
+    let result=await jsonRequest(url,'Post',user);
+    auth.setAuthToken(result.accessToken);
+    auth.setUserId(result._id);
+    auth.setUsername(result.email);
+    nav.loginUser();
+
+    form.reset();
+    viewChanger.navigateTo('home');}
+    catch(err)
+    {
+        form.reset();
+    }
+}
+   
+let loginPage={
+    setupSection,
+    getView,
+    loginUser
+}
+
+export default loginPage;
